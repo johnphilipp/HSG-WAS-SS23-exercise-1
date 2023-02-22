@@ -14,7 +14,9 @@ depot(0,0). // the agent believes that the depot is located at (0,0)
 
 
 /********* START OF YOUR IMPLEMENTATION FOR TASK 1 *********/
-// You can add your solution here
+@start_plan 
++!start : true <-
+   .print("Hello world of miners!").
 /********* END OF YOUR IMPLEMENTATION FOR TASK 1 *********/
 
 /* 
@@ -40,9 +42,9 @@ depot(0,0). // the agent believes that the depot is located at (0,0)
  * Body: computes a random location and creates the goal to explore the route to it 
 */
 @ready_to_explore_plan
-+ready_to_explore : true <-  
-   jia.random(X,20) ; // action that unifies X with a random number in [0, 20]
-   jia.random(Y,20) ; // action that unifies Y with a random number in [0, 20]
++ready_to_explore : map_size(W,H) <-  
+   jia.random(X,W) ; // action that unifies X with a random number in [0, W]
+   jia.random(Y,H) ; // action that unifies Y with a random number in [0, H]
    .print("I will create the goal to explore (",X,",", Y,")");
    !explore(X,Y) . // creates goal explore(X,Y)
 /********* END OF YOUR IMPLEMENTATION FOR TASK 2 *********/
@@ -60,7 +62,11 @@ depot(0,0). // the agent believes that the depot is located at (0,0)
    -+ready_to_explore. // deletes the old belief ready_to_explore and adds a new belief ready_to_explore
 
 /********* START OF YOUR IMPLEMENTATION FOR TASK 3 *********/
-// You can add your solution here
+@gold_perceived_plan[atomic]          
++gold(X,Y) : ready_to_explore & not carrying_gold <- 
+    .print("Gold perceived: ",gold(X,Y));
+    -ready_to_explore;
+    !init_handle(gold(X,Y)).
 /********* END OF YOUR IMPLEMENTATION FOR TASK 3 *********/
 
 /* 
@@ -103,6 +109,12 @@ depot(0,0). // the agent believes that the depot is located at (0,0)
    .print("Handling ", gold(X,Y), "now");
    /********* START OF YOUR IMPLEMENTATION FOR TASK 4 *********/
    // You can add your solution here
+   !move_to(X,Y); // creates goal !move(X,Y)
+   pick; // action that picks a gold nugget when the agent is in the location of a gold nugget
+   !confirm_pick; // creates goal !confirm_pick
+   !move_to(DepotX,DepotY); // creates goal !move(DepotX,DepotY)
+   !confirm_depot; // creates goal !confirm_depot
+   drop; // action that drops a gold nugget when the agent is in the location of the depot
    /********* END OF YOUR IMPLEMENTATION FOR TASK 4 *********/
    .print("Finish handling ",gold(X,Y));
    !!choose_gold. // creates goal !choose_gold
